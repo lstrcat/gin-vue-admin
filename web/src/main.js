@@ -14,6 +14,7 @@ import auth from '@/directive/auth'
 import { store } from '@/pinia'
 import App from './App.vue'
 import { initDom } from './utils/positionToCode'
+import print from "vue3-print-nb";
 
 initDom()
 /**
@@ -37,6 +38,7 @@ app
   .use(store)
   .use(auth)
   .use(router)
+  .use(print)
   .mount('#app')
 
 export default app

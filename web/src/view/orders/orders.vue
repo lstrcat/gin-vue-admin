@@ -103,6 +103,7 @@
         </div>
     </div>
     <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" :title="type==='create'?'打印订单':'打印订单'" destroy-on-close>
+      <div id="printContent">
       <el-descriptions
           :model="formData"
           direction="horizontal"
@@ -132,15 +133,17 @@
       <el-table 
         :data="tableDataGoods" 
         row-key="ID"
-        border
+        border="true"
         style="width: 100%">
           <el-table-column prop="name" label="品名" width="180" />
           <el-table-column prop="property" label="属性" width="auto" />    
           <el-table-column prop="price" label="价格" width="80" />   
           <el-table-column prop="number" label="数量" width="80" />                  
-        </el-table>        
+      </el-table>    
+      </div>    
       <template #footer>
         <div class="dialog-footer">
+          <el-button v-print="printObj" type="primary" >打印</el-button>
           <el-button @click="closeDialog">取 消</el-button>
           <el-button type="primary" @click="enterDialog">确 定</el-button>
         </div>
@@ -189,6 +192,12 @@ const formData = ref({
         createdTime: new Date(),
         })
 const tableDataGoods = ref([])
+
+// 打印对象
+const printObj = {
+  id: "printContent",
+  popTitle: "沙场送货单",
+};
 
 // 验证规则
 const rule = reactive({
@@ -411,5 +420,4 @@ const enterDialog = async () => {
 </script>
 
 <style>
-
 </style>
