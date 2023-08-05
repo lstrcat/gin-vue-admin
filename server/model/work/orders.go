@@ -30,3 +30,18 @@ type Orders struct {
 func (Orders) TableName() string {
 	return "orders"
 }
+
+// OrderGoods 结构体
+type OrderGoods struct {
+	global.GVA_MODEL
+	OrderNo  string   `json:"orderNo" form:"orderNo" gorm:"column:order_no;comment:;size:128;"`
+	Name     string   `json:"name" form:"name" gorm:"column:name;comment:;size:255;"`
+	Number   *int     `json:"number" form:"number" gorm:"column:number;comment:;size:10;"`
+	Price    *float64 `json:"price" form:"price" gorm:"column:price;comment:;size:10;"`
+	Property string   `json:"property" form:"property" gorm:"column:property;comment:;size:255;"`
+}
+
+// TableName Orders 表名
+func (OrderGoods) TableName() string {
+	return "order_goods"
+}

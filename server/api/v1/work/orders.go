@@ -2,20 +2,19 @@ package work
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/work"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
-    workReq "github.com/flipped-aurora/gin-vue-admin/server/model/work/request"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
-    "github.com/flipped-aurora/gin-vue-admin/server/service"
-    "github.com/gin-gonic/gin"
-    "go.uber.org/zap"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/work"
+	workReq "github.com/flipped-aurora/gin-vue-admin/server/model/work/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/service"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type OrdersApi struct {
 }
 
 var ordersService = service.ServiceGroupApp.WorkServiceGroup.OrdersService
-
 
 // CreateOrders 创建Orders
 // @Tags Orders
@@ -34,7 +33,7 @@ func (ordersApi *OrdersApi) CreateOrders(c *gin.Context) {
 		return
 	}
 	if err := ordersService.CreateOrders(&orders); err != nil {
-        global.GVA_LOG.Error("创建失败!", zap.Error(err))
+		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败", c)
 	} else {
 		response.OkWithMessage("创建成功", c)
@@ -58,7 +57,7 @@ func (ordersApi *OrdersApi) DeleteOrders(c *gin.Context) {
 		return
 	}
 	if err := ordersService.DeleteOrders(orders); err != nil {
-        global.GVA_LOG.Error("删除失败!", zap.Error(err))
+		global.GVA_LOG.Error("删除失败!", zap.Error(err))
 		response.FailWithMessage("删除失败", c)
 	} else {
 		response.OkWithMessage("删除成功", c)
@@ -76,13 +75,13 @@ func (ordersApi *OrdersApi) DeleteOrders(c *gin.Context) {
 // @Router /orders/deleteOrdersByIds [delete]
 func (ordersApi *OrdersApi) DeleteOrdersByIds(c *gin.Context) {
 	var IDS request.IdsReq
-    err := c.ShouldBindJSON(&IDS)
+	err := c.ShouldBindJSON(&IDS)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 	if err := ordersService.DeleteOrdersByIds(IDS); err != nil {
-        global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
+		global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
 		response.FailWithMessage("批量删除失败", c)
 	} else {
 		response.OkWithMessage("批量删除成功", c)
@@ -106,7 +105,7 @@ func (ordersApi *OrdersApi) UpdateOrders(c *gin.Context) {
 		return
 	}
 	if err := ordersService.UpdateOrders(orders); err != nil {
-        global.GVA_LOG.Error("更新失败!", zap.Error(err))
+		global.GVA_LOG.Error("更新失败!", zap.Error(err))
 		response.FailWithMessage("更新失败", c)
 	} else {
 		response.OkWithMessage("更新成功", c)
@@ -130,10 +129,15 @@ func (ordersApi *OrdersApi) FindOrders(c *gin.Context) {
 		return
 	}
 	if reorders, err := ordersService.GetOrders(orders.ID); err != nil {
-        global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
 		response.FailWithMessage("查询失败", c)
 	} else {
-		response.OkWithData(gin.H{"reorders": reorders}, c)
+		if goods, err := ordersService.GetOrderGoods(reorders.OrderNo); err != nil {
+			global.GVA_LOG.Error("查询失败!", zap.Error(err))
+			response.FailWithMessage("查询失败", c)
+		} else {
+			response.OkWithData(gin.H{"reorders": reorders, "goods": goods}, c)
+		}
 	}
 }
 
@@ -154,14 +158,14 @@ func (ordersApi *OrdersApi) GetOrdersList(c *gin.Context) {
 		return
 	}
 	if list, total, err := ordersService.GetOrdersInfoList(pageInfo); err != nil {
-	    global.GVA_LOG.Error("获取失败!", zap.Error(err))
-        response.FailWithMessage("获取失败", c)
-    } else {
-        response.OkWithDetailed(response.PageResult{
-            List:     list,
-            Total:    total,
-            Page:     pageInfo.Page,
-            PageSize: pageInfo.PageSize,
-        }, "获取成功", c)
-    }
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(response.PageResult{
+			List:     list,
+			Total:    total,
+			Page:     pageInfo.Page,
+			PageSize: pageInfo.PageSize,
+		}, "获取成功", c)
+	}
 }

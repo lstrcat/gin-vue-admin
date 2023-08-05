@@ -106,7 +106,7 @@
       <el-descriptions
           :model="formData"
           direction="horizontal"
-          :column="1"
+          :column="2"
           :size="size"
           border>
             <el-descriptions-item label="订单编号">{{formData.orderNo}}</el-descriptions-item>
@@ -115,10 +115,10 @@
             <el-descriptions-item label="付款方式" :span="2">{{formData.paymode}}</el-descriptions-item>
             <el-descriptions-item label="金额">{{formData.amount}}</el-descriptions-item>
             <el-descriptions-item label="收件人">
-              {{formData.acceptName}}
+              {{formData.acceptName + ' ' + formData.mobile}}
             </el-descriptions-item>
             <el-descriptions-item label="地址"
-              >{{formData.mobile + ' ' + formData.street + ' ' + formData.doorNumber}}
+              >{{formData.street + ' ' + formData.doorNumber}}
             </el-descriptions-item>
             <el-descriptions-item label="备注">
               <el-tag class="ml-2" type="danger" >{{formData.postscript}}</el-tag>
@@ -128,7 +128,17 @@
                 <el-option v-for="(item,key) in OrderStatusOptions" :key="key" :label="item.label" :value="item.value" />
               </el-select>
             </el-descriptions-item>
-      </el-descriptions>      
+      </el-descriptions>    
+      <el-table 
+        :data="tableDataGoods" 
+        row-key="ID"
+        border
+        style="width: 100%">
+          <el-table-column prop="name" label="品名" width="180" />
+          <el-table-column prop="property" label="属性" width="auto" />    
+          <el-table-column prop="price" label="价格" width="80" />   
+          <el-table-column prop="number" label="数量" width="80" />                  
+        </el-table>        
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeDialog">取 消</el-button>
@@ -178,6 +188,7 @@ const formData = ref({
         doorNumber: '',
         createdTime: new Date(),
         })
+const tableDataGoods = ref([])
 
 // 验证规则
 const rule = reactive({
@@ -320,6 +331,7 @@ const updateOrdersFunc = async(row) => {
     type.value = 'update'
     if (res.code === 0) {
         formData.value = res.data.reorders
+        tableDataGoods.value = res.data.goods
         dialogFormVisible.value = true
     }
 }
