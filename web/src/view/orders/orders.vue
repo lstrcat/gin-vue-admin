@@ -85,8 +85,8 @@
          </el-table-column>
         <el-table-column fixed="right" width="200" label="操作">
             <template #default="scope">
-            <el-button type="primary" link icon="edit" class="table-button" @click="updateOrdersFunc(scope.row)">变更</el-button>
-            <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
+            <el-button type="primary" link icon="edit" class="table-button" @click="updateOrdersFunc(scope.row)">详情</el-button>
+            <!--<el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>-->
             </template>
         </el-table-column>
         </el-table>
@@ -145,7 +145,8 @@
         <div class="dialog-footer">
           <el-button v-print="printObj" type="primary" >打印</el-button>
           <el-button @click="closeDialog">取 消</el-button>
-          <el-button type="primary" @click="enterDialog">确 定</el-button>
+          <!--
+          <el-button type="primary" @click="enterDialog">确 定</el-button>-->
         </div>
       </template>
     </el-dialog>
@@ -170,8 +171,8 @@ import {
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { ref, reactive } from 'vue'
+import { ElMessage, ElMessageBox, ElNotification  } from 'element-plus'
+import { ref, reactive, onMounted, onDeactivated } from 'vue'
 
 // 自动化生成的字典（可能为空）以及字段
 const OrderStatusOptions = ref([])
@@ -198,6 +199,34 @@ const printObj = {
   id: "printContent",
   popTitle: "沙场送货单",
 };
+
+// 订单通知
+const orderNotification = () => {
+  ElNotification({
+    title: '新订单',
+    message: '您有新的订单，请注意查收',
+    duration: 0,
+  })
+  let audio = new Audio()
+  audio.autoplay = true
+	audio.src = "./src/assets/hll.mp3"  
+}
+			
+
+// 定时器
+const timer = ref(0)
+const index = ref(0)
+onMounted(()=>{ //组件挂载时的生命周期执行的方法
+    timer.value = window.setInterval(function logname() {
+        // 其他定时执行的方法
+        index.value = index.value + 1
+        console.log("刷新订单列表"+ index.value);
+        checkGetTableData()
+    }, 5000);
+})
+  onDeactivated(()=>{ //离开当前组件的生命周期执行的方法
+    window.clearInterval(timer.value);
+})
 
 // 验证规则
 const rule = reactive({
@@ -255,6 +284,32 @@ const handleSizeChange = (val) => {
 const handleCurrentChange = (val) => {
   page.value = val
   getTableData()
+}
+
+// 查询-是否有新订单
+const checkGetTableData = async() => {
+  const table = await getOrdersList({ page: 1, pageSize: 10 })
+
+  if (table.code === 0) {
+    let newID = 0
+    if(table.data.list.length > 0){
+      newID = table.data.list[0].ID
+    }
+    let oldID = 0
+    if(tableData.value.length > 0){
+      oldID = tableData.value[0].ID
+    }
+    if( newID != oldID){
+      console.log("新订单: ",newID, " 旧订单: ", oldID)
+      orderNotification()
+
+      tableData.value = table.data.list
+      total.value = table.data.total
+      page.value = table.data.page
+      pageSize.value = table.data.pageSize
+    }
+
+  }
 }
 
 // 查询

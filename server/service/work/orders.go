@@ -69,6 +69,6 @@ func (ordersService *OrdersService) GetOrdersInfoList(info workReq.OrdersSearch)
 		return
 	}
 
-	err = db.Limit(limit).Offset(offset).Find(&orderss).Error
+	err = db.Limit(limit).Offset(offset).Order("id DESC").Find(&orderss).Error
 	return orderss, total, err
 }
