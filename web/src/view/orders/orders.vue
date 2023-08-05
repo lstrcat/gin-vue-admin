@@ -47,8 +47,8 @@
         <el-table-column align="left" label="日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
-        <el-table-column align="left" label="用户ID" prop="userid" width="120" />
-        <el-table-column align="left" label="收件人" width="120">
+        <el-table-column align="left" label="用户ID" prop="userid" width="80" />
+        <el-table-column align="left" label="收件人" width="100">
           <template #default="scope">
           <el-popover effect="light" trigger="hover" placement="top" width="auto">
             <template #default>
@@ -62,26 +62,24 @@
           </el-popover>
         </template>
         </el-table-column>
-        <el-table-column align="left" label="状态" width="120">
+        <el-table-column align="left" label="状态" width="100">
           <template #default="scope">
             <template v-if="scope.row.status == 1">
-              <el-tag class="ml-2" >已下单</el-tag>
+              <el-tag class="ml-2" type="success" >已下单</el-tag>
             </template>             
             <template v-else-if="scope.row.status == 2">
-              <el-tag class="ml-2" >装车中</el-tag>
+              <el-tag class="ml-2" type="info" >装车中</el-tag>
             </template>            
             <template v-else-if="scope.row.status == 3">
-              <el-tag class="ml-2" >配送中</el-tag>
+              <el-tag class="ml-2" type="warning" >配送中</el-tag>
             </template>            
             <template v-else-if="scope.row.status == 4">
-              <el-tag class="ml-2" >已送达</el-tag>
+              <el-tag class="ml-2" type="danger" >已送达</el-tag>
             </template>
            </template>
         </el-table-column>
-        <el-table-column align="left" label="付款方式" prop="paymode" width="120" />
         <el-table-column align="left" label="金额" prop="amount" width="120" />
         <el-table-column align="left" label="订单号" prop="orderNo" width="120" />
-        <el-table-column align="left" label="备注" prop="postscript" width="120" />
          <el-table-column align="left" label="完成时间" width="180">
             <template #default="scope">{{ formatDate(scope.row.productionedTime) }}</template>
          </el-table-column>
@@ -104,53 +102,34 @@
             />
         </div>
     </div>
-    <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" :title="type==='create'?'添加':'修改'" destroy-on-close>
-      <el-form :model="formData" label-position="right" ref="elFormRef" :rules="rule" label-width="80px">
-        <el-form-item label="用户ID:"  prop="userid" >
-          <el-input v-model.number="formData.userid" :clearable="true" placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="类型:"  prop="typecate" >
-          <el-input v-model.number="formData.typecate" :clearable="true" placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="状态:"  prop="status" >
-          <el-select v-model="formData.status" placeholder="请选择" style="width:100%" :clearable="true" >
-            <el-option v-for="(item,key) in OrderStatusOptions" :key="key" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="店名:"  prop="storename" >
-          <el-input v-model="formData.storename" :clearable="true"  placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="付款方式:"  prop="paymode" >
-          <el-input v-model="formData.paymode" :clearable="true"  placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="金额:"  prop="amount" >
-          <el-input v-model="formData.amount" :clearable="true"  placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="订单号:"  prop="orderNo" >
-          <el-input v-model="formData.orderNo" :clearable="true"  placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="备注:"  prop="postscript" >
-          <el-input v-model="formData.postscript" :clearable="true"  placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="完成时间:"  prop="productionedTime" >
-          <el-date-picker v-model="formData.productionedTime" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
-        </el-form-item>
-        <el-form-item label="收件人:"  prop="acceptName" >
-          <el-input v-model="formData.acceptName" :clearable="true"  placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="手机号:"  prop="mobile" >
-          <el-input v-model="formData.mobile" :clearable="true"  placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="街道:"  prop="street" >
-          <el-input v-model="formData.street" :clearable="true"  placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="门牌号:"  prop="doorNumber" >
-          <el-input v-model="formData.doorNumber" :clearable="true"  placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="创建时间:"  prop="createdTime" >
-          <el-date-picker v-model="formData.createdTime" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
-        </el-form-item>
-      </el-form>
+    <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" :title="type==='create'?'打印订单':'打印订单'" destroy-on-close>
+      <el-descriptions
+          :model="formData"
+          title="订单详情"
+          direction="horizontal"
+          :column="1"
+          :size="size"
+          border>
+            <el-descriptions-item label="订单编号">{{formData.orderNo}}</el-descriptions-item>
+            <el-descriptions-item label="创建时间">{{formatDate(formData.CreatedAt)}}</el-descriptions-item>
+            <el-descriptions-item label="用户ID">{{formData.userid}}</el-descriptions-item>
+            <el-descriptions-item label="付款方式" :span="2">{{formData.paymode}}</el-descriptions-item>
+            <el-descriptions-item label="金额">{{formData.amount}}</el-descriptions-item>
+            <el-descriptions-item label="收件人">
+              <el-tag size="small">老王</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="地址"
+              >{{formData.mobile + ' ' + formData.street + ' ' + formData.doorNumber}}
+            </el-descriptions-item>
+            <el-descriptions-item label="备注">
+              <el-tag class="ml-2" type="danger" >{{formData.postscript}}</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="状态">
+              <el-select v-model="formData.status" placeholder="请选择"  :clearable="true" >
+                <el-option v-for="(item,key) in OrderStatusOptions" :key="key" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-descriptions-item>
+      </el-descriptions>      
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeDialog">取 消</el-button>
