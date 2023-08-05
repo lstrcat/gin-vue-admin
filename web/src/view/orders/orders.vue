@@ -44,6 +44,7 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
+        <el-table-column align="left" label="ID" prop="ID" width="80" />
         <el-table-column align="left" label="日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
@@ -79,7 +80,7 @@
            </template>
         </el-table-column>
         <el-table-column align="left" label="金额" prop="amount" width="120" />
-        <el-table-column align="left" label="订单号" prop="orderNo" width="120" />
+        <el-table-column align="left" label="订单号" prop="orderNo" width="150" />
          <el-table-column align="left" label="完成时间" width="180">
             <template #default="scope">{{ formatDate(scope.row.productionedTime) }}</template>
          </el-table-column>
