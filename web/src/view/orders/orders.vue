@@ -105,7 +105,6 @@
     <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" :title="type==='create'?'打印订单':'打印订单'" destroy-on-close>
       <el-descriptions
           :model="formData"
-          title="订单详情"
           direction="horizontal"
           :column="1"
           :size="size"
@@ -116,7 +115,7 @@
             <el-descriptions-item label="付款方式" :span="2">{{formData.paymode}}</el-descriptions-item>
             <el-descriptions-item label="金额">{{formData.amount}}</el-descriptions-item>
             <el-descriptions-item label="收件人">
-              <el-tag size="small">老王</el-tag>
+              {{formData.acceptName}}
             </el-descriptions-item>
             <el-descriptions-item label="地址"
               >{{formData.mobile + ' ' + formData.street + ' ' + formData.doorNumber}}
