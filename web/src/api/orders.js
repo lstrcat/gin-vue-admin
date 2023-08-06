@@ -95,3 +95,10 @@ export const getOrdersList = (params) => {
     params
   })
 }
+
+export const getOrdersCount = () => {
+  return service({
+    url: '/orders/getOrdersCount',
+    method: 'get'
+  })
+}

@@ -169,3 +169,14 @@ func (ordersApi *OrdersApi) GetOrdersList(c *gin.Context) {
 		}, "获取成功", c)
 	}
 }
+
+func (ordersApi *OrdersApi) GetOrdersCount(c *gin.Context) {
+	if total, err := ordersService.GetOrdersCount(); err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(response.PageResult{
+			Total: total,
+		}, "获取成功", c)
+	}
+}

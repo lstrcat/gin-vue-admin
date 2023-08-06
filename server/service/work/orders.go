@@ -72,3 +72,17 @@ func (ordersService *OrdersService) GetOrdersInfoList(info workReq.OrdersSearch)
 	err = db.Limit(limit).Offset(offset).Order("id DESC").Find(&orderss).Error
 	return orderss, total, err
 }
+
+// GetOrdersCount 获取Orders数量
+// Author [piexlmax](https://github.com/piexlmax)
+func (ordersService *OrdersService) GetOrdersCount() (total int64, err error) {
+	// 创建db
+	db := global.GVA_DB.Model(&work.Orders{})
+
+	err = db.Count(&total).Error
+	if err != nil {
+		return
+	}
+
+	return total, err
+}

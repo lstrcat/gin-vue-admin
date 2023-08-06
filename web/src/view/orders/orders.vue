@@ -34,6 +34,15 @@
                 <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="deleteVisible = true">删除</el-button>
             </template>
             </el-popover>
+            <el-switch
+              v-model="swAudio"
+              @change="handleOpenAudio"
+              class="ml-2"
+              inline-prompt
+              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+              active-text="开启声音"
+              inactive-text="音频"
+            />
         </div>
         <el-table
         ref="multipleTable"
@@ -41,6 +50,7 @@
         tooltip-effect="dark"
         :data="tableData"
         row-key="ID"
+        :row-class-name="tableRowClassName"
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
@@ -84,7 +94,7 @@
          <el-table-column align="left" label="完成时间" width="180">
             <template #default="scope">{{ formatDate(scope.row.productionedTime) }}</template>
          </el-table-column>
-        <el-table-column fixed="right" width="200" label="操作">
+        <el-table-column width="200" label="操作">
             <template #default="scope">
             <el-button type="primary" link icon="edit" class="table-button" @click="updateOrdersFunc(scope.row)">详情</el-button>
             <!--<el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>-->
@@ -126,7 +136,7 @@
               <el-tag class="ml-2" type="danger" >{{formData.postscript}}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="状态">
-              <el-select v-model="formData.status" placeholder="请选择"  :clearable="true" >
+              <el-select v-model="formData.status" placeholder="请选择" >
                 <el-option v-for="(item,key) in OrderStatusOptions" :key="key" :label="item.label" :value="item.value" />
               </el-select>
             </el-descriptions-item>
@@ -194,6 +204,7 @@ const formData = ref({
         createdTime: new Date(),
         })
 const tableDataGoods = ref([])
+const swAudio = ref(false)
 
 // 打印对象
 const printObj = {
@@ -202,15 +213,15 @@ const printObj = {
 };
 
 // 订单通知
-const orderNotification = () => {
+const orderNotification = (title,str) => {
   ElNotification({
-    title: '新订单',
-    message: '您有新的订单，请注意查收',
+    title: title,
+    message: str,
     duration: 0,
   })
   let audio = new Audio()
-  audio.autoplay = true
-	audio.src = "./src/assets/hll.mp3"  
+	audio.src = "http://ryhsxbzuv.bkt.clouddn.com/mp3/hll.mp3"
+  audio.play()
 }
 			
 
@@ -259,6 +270,19 @@ const pageSize = ref(10)
 const tableData = ref([])
 const searchInfo = ref({})
 
+// 表格行颜色
+const tableRowClassName = ({
+  row,
+  rowIndex,
+}) => {
+  if (rowIndex === 0 && row.newcomer == true) {
+    return 'warning-row'
+  } else if (rowIndex === 3) {
+    return ''
+  }
+  return ''
+}
+
 // 重置
 const onReset = () => {
   searchInfo.value = {}
@@ -292,17 +316,18 @@ const checkGetTableData = async() => {
   const table = await getOrdersList({ page: 1, pageSize: 10 })
 
   if (table.code === 0) {
-    let newID = 0
+    let newOrder = {}
     if(table.data.list.length > 0){
-      newID = table.data.list[0].ID
+      newOrder = table.data.list[0]
     }
-    let oldID = 0
+    let oldOrder = {}
     if(tableData.value.length > 0){
-      oldID = tableData.value[0].ID
+      oldOrder = tableData.value[0]
     }
-    if( newID != oldID){
-      console.log("新订单: ",newID, " 旧订单: ", oldID)
-      orderNotification()
+    if( newOrder.ID != oldOrder.ID){
+      console.log("新订单: ",newOrder.ID, " 旧订单: ", oldOrder.ID)
+      newOrder.newcomer = true
+      orderNotification('新订单', '您有新的订单，请注意查收' + '(' + newOrder.orderNo + ')')
 
       tableData.value = table.data.list
       total.value = table.data.total
@@ -342,6 +367,12 @@ const multipleSelection = ref([])
 // 多选
 const handleSelectionChange = (val) => {
     multipleSelection.value = val
+}
+
+const handleOpenAudio = () => {
+  if(swAudio.value == true) {
+   orderNotification("提示","打开新订单声音通知")
+  }
 }
 
 // 删除行
@@ -476,4 +507,10 @@ const enterDialog = async () => {
 </script>
 
 <style>
+.el-table .warning-row {
+  --el-table-tr-bg-color: var(--el-color-warning-light-9);
+}
+.el-table .success-row {
+  --el-table-tr-bg-color: var(--el-color-success-light-9);
+}
 </style>
